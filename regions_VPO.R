@@ -285,17 +285,17 @@ vpo_roi <- c("Ростовская область", "Волгоградская 
 vpo_all_regions_stats %>% 
   filter(region %in% vpo_roi) -> vpo_roi_stats
 
-vpo_roi_stats %>% #View()
-  googlesheets4::write_sheet(
-  ss = "https://docs.google.com/spreadsheets/d/1YuYjpk5ANbsObbSWgz8K90mGIMqvJAN4nPRUGCdJbHM/edit#gid=0",
-  sheet = "VPO_roi_specs"
-)
+# vpo_roi_stats %>% #View()
+#   googlesheets4::write_sheet(
+#   ss = "https://docs.google.com/spreadsheets/d/1YuYjpk5ANbsObbSWgz8K90mGIMqvJAN4nPRUGCdJbHM/edit#gid=0",
+#   sheet = "VPO_roi_specs"
+# )
 
-vpo_all_regions_stats %>% #View()
-  googlesheets4::write_sheet(
-    ss = "https://docs.google.com/spreadsheets/d/1YuYjpk5ANbsObbSWgz8K90mGIMqvJAN4nPRUGCdJbHM/edit#gid=0",
-    sheet = "VPO_allreg_specs"
-  )
+# vpo_all_regions_stats %>% #View()
+#   googlesheets4::write_sheet(
+#     ss = "https://docs.google.com/spreadsheets/d/1YuYjpk5ANbsObbSWgz8K90mGIMqvJAN4nPRUGCdJbHM/edit#gid=0",
+#     sheet = "VPO_allreg_specs"
+#   )
 
 # vpo_roi_stats %>% 
 #   filter(field == 2 & year == 2016 & region == "Волгоградская область") %>% 
@@ -428,7 +428,7 @@ vpo_all_regions_stats %>%
   ) %>% arrange(region, year, field) -> vpo_allreg_avgs
 
 
-colnames(roi_stats)
+colnames(vpo_roi_stats)
 
 
 vpo_all_regions_stats %>% 
@@ -453,6 +453,12 @@ vpo_all_regions_stats %>%
                                           na.rm = TRUE) %>% round(2)
   ) %>% 
   arrange(region, year, field) -> vpo_allreg_fields
+
+
+vpo_all_regions_stats %>% write_csv("vpo_allreg_stats.csv")
+vpo_allreg_avgs %>% write_csv("vpo_allreg_avgs.csv")
+vpo_allreg_fields %>% write_csv("vpo_allreg_fields.csv")
+
 
 save.image("vpo_export.RData")
 

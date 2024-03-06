@@ -228,6 +228,10 @@ spo_all_regions_stats %>%
   ) %>% 
   arrange(region, year, field) -> spo_allreg_fields
 
+spo_all_regions_stats %>% write_csv("spo_allreg_stats.csv")
+spo_allreg_avgs %>% write_csv("spo_allreg_avgs.csv")
+spo_allreg_fields %>% write_csv("spo_allreg_fields.csv")
+
 save.image("spo_export.RData")
 
 # spo_roi_avgs %>% #View()
