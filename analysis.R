@@ -154,7 +154,7 @@ spo_allreg_perc_applied_accepted_type_form %>%
          year = as_factor(year)) %>% # pull(group_code_short)
   ggplot(aes(group_code_short, value, fill = year)) +
   geom_col(position = position_dodge()) +
-  facet_grid(name ~ region + form, scales = "free_y",
+  facet_grid(name ~ region + form, scales = "free",
              labeller = labeller(name = c(perc_applied_budget = "Поданных на бюджет", 
                                           perc_applied_commerc = "Поданных на коммерцию",
                                           perc_accepted_budget = "Принятых на бюджет",
@@ -179,7 +179,7 @@ spo_allreg_perc_applied_accepted_type_form %>%
          year = as_factor(year)) %>% # pull(group_code_short)
   ggplot(aes(group_code_short, value, fill = year)) +
   geom_col(position = position_dodge()) +
-  facet_grid(name ~ region + form, scales = "free_y",
+  facet_grid(name ~ region + form, scales = "free",
              labeller = labeller(name = c(perc_applied_budget = "Поданных на бюджет", 
                                           perc_applied_commerc = "Поданных на коммерцию",
                                           perc_accepted_budget = "Принятых на бюджет",
@@ -228,7 +228,7 @@ vpo_allreg_perc_applied_accepted_type_form %>%
          year = as_factor(year)) %>% # pull(group_code_short)
   ggplot(aes(group_code_short, value, fill = year)) +
   geom_col(position = position_dodge()) +
-  facet_grid(name ~ region + form, scales = "free_y",
+  facet_grid(name ~ region + form, scales = "free",
              labeller = labeller(name = c(perc_applied_budget = "Поданных на бюджет", 
                                           perc_applied_commerc = "Поданных на коммерцию",
                                           perc_accepted_budget = "Принятых на бюджет",
@@ -253,7 +253,7 @@ vpo_allreg_perc_applied_accepted_type_form %>%
          year = as_factor(year)) %>% # pull(group_code_short)
   ggplot(aes(group_code_short, value, fill = year)) +
   geom_col(position = position_dodge()) +
-  facet_grid(name ~ region + form, scales = "free_y",
+  facet_grid(name ~ region + form, scales = "free",
              labeller = labeller(name = c(perc_applied_budget = "Поданных на бюджет", 
                                           perc_applied_commerc = "Поданных на коммерцию",
                                           perc_accepted_budget = "Принятых на бюджет",
@@ -263,6 +263,83 @@ vpo_allreg_perc_applied_accepted_type_form %>%
        fill = "Год",
        title = "Доля принятых/поданных заявлений от общего числа в отдельном регионе в 2016, 2022, 2023 гг.",
        subtitle = "ВПО, негосударственные, c учетом формы обучения")
+
+
+spo_allreg_stats %>% 
+  distinct(form, group_code_name) %>% 
+  summarise(n_group_spo = n(),
+            .by = form) %>% 
+  full_join(
+    spo_allreg_stats %>% 
+      distinct(form, code) %>% 
+      summarise(n_spec_spo = n(),
+                .by = form)
+  ) %>% 
+  full_join(vpo_allreg_stats %>% 
+              distinct(form, group_code_name) %>% 
+              summarise(n_group_vpo = n(),
+                        .by = form)) %>% 
+  full_join(vpo_allreg_stats %>% 
+              distinct(form, code) %>% 
+              summarise(n_spec_vpo = n(),
+                        .by = form))
+
+spo_allreg_avgs %>% # colnames()
+  separate(group_code_name, into = c("group_code", "group_name"), sep = " - ") %>% 
+  mutate(group_code_short = group_code %>% str_remove("^\\d{1}\\.") %>% str_remove("\\.00\\.00$"),
+         year = as_factor(year)) %>% # pull(group_code_short)
+  select(konkurs_budget_mean, 
+         konkurs_commerce_mean,
+         group_code_short,
+         type,
+         form,
+         region,
+         year) %>% 
+  pivot_longer(cols = c(konkurs_budget_mean, konkurs_commerce_mean)) %>% 
+  filter(region %in% roi & 
+           year %in% c(2016, 2022, 2023)) %>% 
+  ggplot(aes(group_code_short, value, fill = year)) +
+  geom_col(position = position_dodge()) +
+  facet_grid(
+    name ~ region,
+    # name ~ region + form + type, 
+    scales = "free_y",
+    labeller = labeller(name = c(konkurs_budget_mean = "Бюджет", 
+                                 konkurs_commerce_mean = "Коммерция"))) +
+  labs(x = "Код группы специальностей (x.XX.xx.xx)",
+       y = "Средний конкурс (взвешенный на количество поданных заявлений)",
+       fill = "Год",
+       title = "Конкурс на группы специальностей в 2016, 2022, 2023 гг.",
+       subtitle = "СПО, без учета формы обучения и типа учебного заведения")
+  
+
+vpo_allreg_avgs %>% # colnames()
+  separate(group_code_name, into = c("group_code", "group_name"), sep = " - ") %>% 
+  mutate(group_code_short = group_code %>% str_remove("^\\d{1}\\.") %>% str_remove("\\.00\\.00$"),
+         year = as_factor(year)) %>% # pull(group_code_short)
+  select(konkurs_budget_mean, 
+         konkurs_commerce_mean,
+         group_code_short,
+         type,
+         form,
+         region,
+         year) %>% 
+  pivot_longer(cols = c(konkurs_budget_mean, konkurs_commerce_mean)) %>% 
+  filter(region %in% roi & 
+           year %in% c(2016, 2022, 2023)) %>% 
+  ggplot(aes(group_code_short, value, fill = year)) +
+  geom_col(position = position_dodge()) +
+  facet_grid(
+    name ~ region,
+    # name ~ region + form + type, 
+    scales = "free_y",
+    labeller = labeller(name = c(konkurs_budget_mean = "Бюджет", 
+                                 konkurs_commerce_mean = "Коммерция"))) +
+  labs(x = "Код группы специальностей (x.XX.xx.xx)",
+       y = "Средний конкурс (взвешенный на количество поданных заявлений)",
+       fill = "Год",
+       title = "Конкурс на группы специальностей в 2016, 2022, 2023 гг.",
+       subtitle = "ВПО, без учета формы обучения и типа учебного заведения")
 
 
 
