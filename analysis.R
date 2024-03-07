@@ -44,13 +44,15 @@ spo_allreg_avgs %>% #colnames()
 spo_allreg_perc_applied_accepted %>% 
   # sapply(function(x) sum(is.na(x)))
   filter(region %in% roi & 
-           year %in% c(2016, 2022, 2023)) %>% 
+           year %in% c(2016, 2017, 2022, 2023)) %>% 
   # filter(is.na(perc_accepted_commerc))
   pivot_longer(cols = -c(region, year, group_code_name)) %>% 
   separate(group_code_name, into = c("group_code", "group_name"), sep = " - ") %>% 
   # filter(!str_detect(name, "konkurs")) %>% 
-  mutate(group_code_short = group_code %>% str_remove("^\\d{1}\\.") %>% str_remove("\\.00\\.00$"),
-         year = as_factor(year)) %>% # pull(group_code_short)
+  mutate(
+    group_code_short = group_code %>% str_remove("^\\d{1}\\.") %>% str_remove("\\.00\\.00$"),
+    year = as_factor(year)
+    ) %>% # pull(group_code_short)
   ggplot(aes(group_code_short, value, fill = year)) +
   geom_col(position = position_dodge()) +
   facet_grid(name ~ region, scales = "free_y",
@@ -63,6 +65,93 @@ spo_allreg_perc_applied_accepted %>%
        fill = "Год",
        title = "Доля принятых/поданных заявлений от общего числа в отдельном регионе в 2016, 2022, 2023 гг.",
        subtitle = "СПО, без учета формы обучения и типа учебного заведения")
+
+
+spo_allreg_perc_applied_accepted %>% 
+  # sapply(function(x) sum(is.na(x)))
+  filter(region %in% roi & 
+           year %in% c(2016, 2017, 2022, 2023)) %>% 
+  # filter(is.na(perc_accepted_commerc))
+  pivot_longer(cols = -c(region, year, group_code_name)) %>% 
+  # separate(group_code_name, into = c("group_code", "group_name"), sep = " - ") %>% 
+  # filter(!str_detect(name, "konkurs")) %>% 
+  mutate(
+    # group_code_short = group_code %>% str_remove("^\\d{1}\\.") %>% str_remove("\\.00\\.00$"),
+    year = as_factor(year)
+  ) %>% # pull(group_code_short)
+  ggplot(aes(group_code_name, value, fill = year)) +
+  geom_col(position = position_dodge()) +
+  facet_grid(name ~ region, scales = "free_y",
+             labeller = labeller(name = c(perc_applied_budget = "Поданных на бюджет", 
+                                          perc_applied_commerc = "Поданных на коммерцию",
+                                          perc_accepted_budget = "Принятых на бюджет",
+                                          perc_accepted_commerc = "Принятых на коммерцию"))) +
+  coord_flip() +
+  labs(x = "Код группы специальностей (x.XX.xx.xx)",
+       y = "Доля от общего числа",
+       fill = "Год",
+       title = "Доля принятых/поданных заявлений от общего числа в отдельном регионе в 2016, 2022, 2023 гг.",
+       subtitle = "СПО, без учета формы обучения и типа учебного заведения")
+
+
+spo_allreg_fields %>% # colnames()
+  summarise(applied_budget_all = sum(applied_budget_total_sum),
+            applied_commerc_all = sum(applied_commerc_sum),
+            accepted_budget_all = sum(accepted_budget_total_sum),
+            accepted_commerc_all = sum(accepted_commerc_sum),
+            .by = c(region, year)) %>%
+  right_join(spo_allreg_fields, ## without form, without type
+             join_by(region, year)) %>% # View()
+  mutate(perc_applied_budget = applied_budget_total_sum / applied_budget_all,
+         perc_applied_commerc = applied_commerc_sum / applied_commerc_all,
+         perc_accepted_budget = accepted_budget_total_sum / accepted_budget_all,
+         perc_accepted_commerc = accepted_commerc_sum / accepted_commerc_all) %>% # print()
+  select(region, 
+         year,
+         field,
+         # group_code_name,
+         # type, ## without type
+         # form, ## without form
+         perc_applied_budget, 
+         perc_applied_commerc,
+         perc_accepted_budget,
+         perc_accepted_commerc) -> spo_allreg_fields_perc_applied_accepted
+
+spo_allreg_fields_perc_applied_accepted %>% 
+  filter(region %in% roi) %>% 
+  pivot_longer(cols = -c(region, year, field)) %>% 
+  filter(!str_detect(name, "konkurs")) %>% # print()
+  ggplot(aes(year, value, color = name)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(field ~ region)
+
+
+
+spo_allreg_perc_applied_accepted %>% 
+  # sapply(function(x) sum(is.na(x)))
+  filter(region %in% roi) %>% 
+  # filter(is.na(perc_accepted_commerc))
+  pivot_longer(cols = -c(region, year, group_code_name)) %>% 
+  separate(group_code_name, into = c("group_code", "group_name"), sep = " - ") %>% 
+  filter(!str_detect(name, "konkurs")) %>% 
+  mutate(
+    group_code_short = group_code %>% str_remove("^\\d{1}\\.") %>% str_remove("\\.00\\.00$"),
+    year = as_factor(year)
+  ) %>% # pull(group_code_short)
+  ggplot(aes(year, value, color = name)) +
+  geom_point() +
+  facet_grid(group_code_short ~ region, scales = "free_y") +
+  labs(x = "Год",
+       y = "Доля от общего числа",
+       fill = "Год",
+       title = "Доля принятых/поданных заявлений от общего числа в отдельном регионе в 2016, 2022, 2023 гг.",
+       subtitle = "СПО, без учета формы обучения и типа учебного заведения")
+
+
+
+
+
 
 
 
@@ -344,5 +433,35 @@ vpo_allreg_avgs %>% # colnames()
 
 
 
+vpo_allreg_fields %>% # colnames()
+  summarise(applied_budget_all = sum(applied_budget_total_sum),
+            applied_commerc_all = sum(applied_commerc_sum),
+            accepted_budget_all = sum(accepted_budget_total_sum),
+            accepted_commerc_all = sum(accepted_commerc_sum),
+            .by = c(region, year)) %>%
+  right_join(vpo_allreg_fields, ## without form, without type
+             join_by(region, year)) %>% # View()
+  mutate(perc_applied_budget = applied_budget_total_sum / applied_budget_all,
+         perc_applied_commerc = applied_commerc_sum / applied_commerc_all,
+         perc_accepted_budget = accepted_budget_total_sum / accepted_budget_all,
+         perc_accepted_commerc = accepted_commerc_sum / accepted_commerc_all) %>% # print()
+  select(region, 
+         year,
+         field,
+         # group_code_name,
+         # type, ## without type
+         # form, ## without form
+         perc_applied_budget, 
+         perc_applied_commerc,
+         perc_accepted_budget,
+         perc_accepted_commerc) -> vpo_allreg_fields_perc_applied_accepted
 
+vpo_allreg_fields_perc_applied_accepted %>% 
+  filter(region %in% roi) %>% 
+  pivot_longer(cols = -c(region, year, field)) %>% 
+  filter(!str_detect(name, "konkurs")) %>% # print()
+  ggplot(aes(year, value, color = name)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(field ~ region)
 
