@@ -456,6 +456,8 @@ vpo_allreg_fields %>% # colnames()
          perc_accepted_budget,
          perc_accepted_commerc) -> vpo_allreg_fields_perc_applied_accepted
 
+
+
 vpo_allreg_fields_perc_applied_accepted %>% 
   filter(region %in% roi) %>% 
   pivot_longer(cols = -c(region, year, field)) %>% 
@@ -463,5 +465,410 @@ vpo_allreg_fields_perc_applied_accepted %>%
   ggplot(aes(year, value, color = name)) +
   geom_line() +
   geom_point() +
-  facet_grid(field ~ region)
+  facet_grid(field ~ region) +
+  scale_color_discrete(labels = c(perc_applied_budget = "Поданные, бюджет", 
+                                  perc_applied_commerc = "Поданные, коммерция",
+                                  perc_accepted_budget = "Принятые, бюджет",
+                                  perc_accepted_commerc = "Принятые, коммерция")) +
+  labs(x = "Год", y = "Доля",
+       color = "",
+       title = "Динамика поданных/принятых заявлений",
+       subtitle = "ВПО")
+
+spo_allreg_fields_perc_applied_accepted %>% 
+  filter(region %in% roi) %>% 
+  pivot_longer(cols = -c(region, year, field)) %>% 
+  filter(!str_detect(name, "konkurs")) %>% # print()
+  ggplot(aes(year, value, color = name)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(field ~ region) +
+  scale_color_discrete(labels = c(perc_applied_budget = "Поданные, бюджет", 
+                                  perc_applied_commerc = "Поданные, коммерция",
+                                  perc_accepted_budget = "Принятые, бюджет",
+                                  perc_accepted_commerc = "Принятые, коммерция")) +
+  labs(x = "Год", y = "Доля",
+       color = "",
+       title = "Динамика поданных/принятых заявлений",
+       subtitle = "CПО")
+
+
+
+spo_allreg_avgs %>% #colnames()
+  summarise(applied_budget_group_sum = sum(applied_budget_total_sum),
+            applied_commerc_group_sum = sum(applied_commerc_sum),
+            accepted_budget_group_sum = sum(accepted_budget_total_sum),
+            accepted_commerc_group_sum = sum(accepted_commerc_sum),
+            .by = c(region, year)) %>% 
+  right_join(spo_allreg_avgs %>% ## without form, without type
+               summarise(applied_budget_total_sum = sum(applied_budget_total_sum),
+                         applied_commerc_sum = sum(applied_commerc_sum),
+                         accepted_budget_total_sum = sum(accepted_budget_total_sum),
+                         accepted_commerc_sum = sum(accepted_commerc_sum),
+                         .by = c(region, year, group_code_name)),
+             join_by(region, year)) %>% # View()
+  mutate(perc_applied_budget = applied_budget_total_sum / applied_budget_group_sum,
+         perc_applied_commerc = applied_commerc_sum / applied_commerc_group_sum,
+         perc_accepted_budget = accepted_budget_total_sum / accepted_budget_group_sum,
+         perc_accepted_commerc = accepted_commerc_sum / accepted_commerc_group_sum) %>% # print()
+  select(region, 
+         year,
+         group_code_name,
+         # type, ## without type
+         # form, ## without form
+         perc_applied_budget, 
+         perc_applied_commerc,
+         perc_accepted_budget,
+         perc_accepted_commerc)
+  
+
+## SPO 1
+spo_allreg_perc_applied_accepted %>% 
+  filter(region %in% roi &
+           str_detect(group_code_name, "^1")) %>% 
+  pivot_longer(cols = -c(region, year, group_code_name)) %>% 
+  mutate(code = group_code_name %>% str_remove_all("^\\d{1}\\.") %>% str_remove_all("\\.\\d{2}.+$")) %>% 
+  filter(!str_detect(name, "konkurs")) %>% # print()
+  ggplot(aes(year, value, color = name)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(code ~ region,
+             scales = "free_y") +
+  scale_color_discrete(labels = c(perc_applied_budget = "Поданные, бюджет", 
+                                  perc_applied_commerc = "Поданные, коммерция",
+                                  perc_accepted_budget = "Принятые, бюджет",
+                                  perc_accepted_commerc = "Принятые, коммерция")) +
+  labs(x = "Год", y = "Доля",
+       color = "",
+       title = "Динамика поданных/принятых заявлений",
+       subtitle = "CПО, Математические и естественные науки")
+
+
+## SPO 2
+spo_allreg_perc_applied_accepted %>% 
+  filter(region %in% roi &
+           str_detect(group_code_name, "^2")) %>% 
+  pivot_longer(cols = -c(region, year, group_code_name)) %>% 
+  mutate(code = group_code_name %>% str_remove_all("^\\d{1}\\.") %>% str_remove_all("\\.\\d{2}.+$")) %>% 
+  filter(!str_detect(name, "konkurs")) %>% # print()
+  ggplot(aes(year, value, color = name)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(code ~ region,
+             scales = "free_y") +
+  scale_color_discrete(labels = c(perc_applied_budget = "Поданные, бюджет", 
+                                  perc_applied_commerc = "Поданные, коммерция",
+                                  perc_accepted_budget = "Принятые, бюджет",
+                                  perc_accepted_commerc = "Принятые, коммерция")) +
+  labs(x = "Год", y = "Доля",
+       color = "",
+       title = "Динамика поданных/принятых заявлений",
+       subtitle = "CПО, Инженерное дело, технологии и технические науки")
+
+
+## SPO 3
+spo_allreg_perc_applied_accepted %>% 
+  filter(region %in% roi &
+           str_detect(group_code_name, "^3")) %>% 
+  pivot_longer(cols = -c(region, year, group_code_name)) %>% 
+  mutate(code = group_code_name %>% str_remove_all("^\\d{1}\\.") %>% str_remove_all("\\.\\d{2}.+$")) %>% 
+  filter(!str_detect(name, "konkurs")) %>% # print()
+  ggplot(aes(year, value, color = name)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(code ~ region,
+             scales = "free_y") +
+  scale_color_discrete(labels = c(perc_applied_budget = "Поданные, бюджет", 
+                                  perc_applied_commerc = "Поданные, коммерция",
+                                  perc_accepted_budget = "Принятые, бюджет",
+                                  perc_accepted_commerc = "Принятые, коммерция")) +
+  labs(x = "Год", y = "Доля",
+       color = "",
+       title = "Динамика поданных/принятых заявлений",
+       subtitle = "CПО, Здравоохранение и медицинские науки")
+
+
+## SPO 4
+spo_allreg_perc_applied_accepted %>% 
+  filter(region %in% roi &
+           str_detect(group_code_name, "^4")) %>% 
+  pivot_longer(cols = -c(region, year, group_code_name)) %>% 
+  mutate(code = group_code_name %>% str_remove_all("^\\d{1}\\.") %>% str_remove_all("\\.\\d{2}.+$")) %>% 
+  filter(!str_detect(name, "konkurs")) %>% # print()
+  ggplot(aes(year, value, color = name)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(code ~ region,
+             scales = "free_y") +
+  scale_color_discrete(labels = c(perc_applied_budget = "Поданные, бюджет", 
+                                  perc_applied_commerc = "Поданные, коммерция",
+                                  perc_accepted_budget = "Принятые, бюджет",
+                                  perc_accepted_commerc = "Принятые, коммерция")) +
+  labs(x = "Год", y = "Доля",
+       color = "",
+       title = "Динамика поданных/принятых заявлений",
+       subtitle = "CПО, Сельское хозяйство и сельскохозяйственные науки")
+
+## SPO 5
+spo_allreg_perc_applied_accepted %>% 
+  filter(region %in% roi &
+           str_detect(group_code_name, "^5")) %>% 
+  pivot_longer(cols = -c(region, year, group_code_name)) %>% 
+  mutate(code = group_code_name %>% str_remove_all("^\\d{1}\\.") %>% str_remove_all("\\.\\d{2}.+$")) %>% 
+  filter(!str_detect(name, "konkurs")) %>% # print()
+  ggplot(aes(year, value, color = name)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(code ~ region,
+             scales = "free_y") +
+  scale_color_discrete(labels = c(perc_applied_budget = "Поданные, бюджет", 
+                                  perc_applied_commerc = "Поданные, коммерция",
+                                  perc_accepted_budget = "Принятые, бюджет",
+                                  perc_accepted_commerc = "Принятые, коммерция")) +
+  labs(x = "Год", y = "Доля",
+       color = "",
+       title = "Динамика поданных/принятых заявлений",
+       subtitle = "CПО, Науки об обществе")
+
+
+## SPO 6
+spo_allreg_perc_applied_accepted %>% 
+  filter(region %in% roi &
+           str_detect(group_code_name, "^6")) %>% 
+  pivot_longer(cols = -c(region, year, group_code_name)) %>% 
+  mutate(code = group_code_name %>% str_remove_all("^\\d{1}\\.") %>% str_remove_all("\\.\\d{2}.+$")) %>% 
+  filter(!str_detect(name, "konkurs")) %>% # print()
+  ggplot(aes(year, value, color = name)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(code ~ region,
+             scales = "free_y") +
+  scale_color_discrete(labels = c(perc_applied_budget = "Поданные, бюджет", 
+                                  perc_applied_commerc = "Поданные, коммерция",
+                                  perc_accepted_budget = "Принятые, бюджет",
+                                  perc_accepted_commerc = "Принятые, коммерция")) +
+  labs(x = "Год", y = "Доля",
+       color = "",
+       title = "Динамика поданных/принятых заявлений",
+       subtitle = "CПО, Образование и педагогические науки")
+
+
+## SPO 7
+spo_allreg_perc_applied_accepted %>% 
+  filter(region %in% roi &
+           str_detect(group_code_name, "^7")) %>% 
+  pivot_longer(cols = -c(region, year, group_code_name)) %>% 
+  mutate(code = group_code_name %>% str_remove_all("^\\d{1}\\.") %>% str_remove_all("\\.\\d{2}.+$")) %>% 
+  filter(!str_detect(name, "konkurs")) %>% # print()
+  ggplot(aes(year, value, color = name)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(code ~ region,
+             scales = "free_y") +
+  scale_color_discrete(labels = c(perc_applied_budget = "Поданные, бюджет", 
+                                  perc_applied_commerc = "Поданные, коммерция",
+                                  perc_accepted_budget = "Принятые, бюджет",
+                                  perc_accepted_commerc = "Принятые, коммерция")) +
+  labs(x = "Год", y = "Доля",
+       color = "",
+       title = "Динамика поданных/принятых заявлений",
+       subtitle = "CПО, Гуманитарные науки")
+
+
+## SPO 8
+spo_allreg_perc_applied_accepted %>% 
+  filter(region %in% roi &
+           str_detect(group_code_name, "^8")) %>% 
+  pivot_longer(cols = -c(region, year, group_code_name)) %>% 
+  mutate(code = group_code_name %>% str_remove_all("^\\d{1}\\.") %>% str_remove_all("\\.\\d{2}.+$")) %>% 
+  filter(!str_detect(name, "konkurs")) %>% # print()
+  ggplot(aes(year, value, color = name)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(code ~ region,
+             scales = "free_y") +
+  scale_color_discrete(labels = c(perc_applied_budget = "Поданные, бюджет", 
+                                  perc_applied_commerc = "Поданные, коммерция",
+                                  perc_accepted_budget = "Принятые, бюджет",
+                                  perc_accepted_commerc = "Принятые, коммерция")) +
+  labs(x = "Год", y = "Доля",
+       color = "",
+       title = "Динамика поданных/принятых заявлений",
+       subtitle = "CПО, Искусство и культура")
+
+
+
+## VPO 1
+vpo_allreg_perc_applied_accepted %>% 
+  filter(region %in% roi &
+           str_detect(group_code_name, "^1")) %>% 
+  pivot_longer(cols = -c(region, year, group_code_name)) %>% 
+  mutate(code = group_code_name %>% str_remove_all("^\\d{1}\\.") %>% str_remove_all("\\.\\d{2}.+$")) %>% 
+  filter(!str_detect(name, "konkurs")) %>% # print()
+  ggplot(aes(year, value, color = name)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(code ~ region,
+             scales = "free_y") +
+  scale_color_discrete(labels = c(perc_applied_budget = "Поданные, бюджет", 
+                                  perc_applied_commerc = "Поданные, коммерция",
+                                  perc_accepted_budget = "Принятые, бюджет",
+                                  perc_accepted_commerc = "Принятые, коммерция")) +
+  labs(x = "Год", y = "Доля",
+       color = "",
+       title = "Динамика поданных/принятых заявлений",
+       subtitle = "ВПО, Математические и естественные науки")
+
+
+## VPO 2
+vpo_allreg_perc_applied_accepted %>% 
+  filter(region %in% roi &
+           str_detect(group_code_name, "^2")) %>% 
+  pivot_longer(cols = -c(region, year, group_code_name)) %>% 
+  mutate(code = group_code_name %>% str_remove_all("^\\d{1}\\.") %>% str_remove_all("\\.\\d{2}.+$")) %>% 
+  filter(!str_detect(name, "konkurs")) %>% # print()
+  ggplot(aes(year, value, color = name)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(code ~ region,
+             scales = "free_y") +
+  scale_color_discrete(labels = c(perc_applied_budget = "Поданные, бюджет", 
+                                  perc_applied_commerc = "Поданные, коммерция",
+                                  perc_accepted_budget = "Принятые, бюджет",
+                                  perc_accepted_commerc = "Принятые, коммерция")) +
+  labs(x = "Год", y = "Доля",
+       color = "",
+       title = "Динамика поданных/принятых заявлений",
+       subtitle = "ВПО, Инженерное дело, технологии и технические науки")
+
+
+## VPO 3
+vpo_allreg_perc_applied_accepted %>% 
+  filter(region %in% roi &
+           str_detect(group_code_name, "^3")) %>% 
+  pivot_longer(cols = -c(region, year, group_code_name)) %>% 
+  mutate(code = group_code_name %>% str_remove_all("^\\d{1}\\.") %>% str_remove_all("\\.\\d{2}.+$")) %>% 
+  filter(!str_detect(name, "konkurs")) %>% # print()
+  ggplot(aes(year, value, color = name)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(code ~ region,
+             scales = "free_y") +
+  scale_color_discrete(labels = c(perc_applied_budget = "Поданные, бюджет", 
+                                  perc_applied_commerc = "Поданные, коммерция",
+                                  perc_accepted_budget = "Принятые, бюджет",
+                                  perc_accepted_commerc = "Принятые, коммерция")) +
+  labs(x = "Год", y = "Доля",
+       color = "",
+       title = "Динамика поданных/принятых заявлений",
+       subtitle = "ВПО, Здравоохранение и медицинские науки")
+
+
+## VPO 4
+vpo_allreg_perc_applied_accepted %>% 
+  filter(region %in% roi &
+           str_detect(group_code_name, "^4")) %>% 
+  pivot_longer(cols = -c(region, year, group_code_name)) %>% 
+  mutate(code = group_code_name %>% str_remove_all("^\\d{1}\\.") %>% str_remove_all("\\.\\d{2}.+$")) %>% 
+  filter(!str_detect(name, "konkurs")) %>% # print()
+  ggplot(aes(year, value, color = name)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(code ~ region,
+             scales = "free_y") +
+  scale_color_discrete(labels = c(perc_applied_budget = "Поданные, бюджет", 
+                                  perc_applied_commerc = "Поданные, коммерция",
+                                  perc_accepted_budget = "Принятые, бюджет",
+                                  perc_accepted_commerc = "Принятые, коммерция")) +
+  labs(x = "Год", y = "Доля",
+       color = "",
+       title = "Динамика поданных/принятых заявлений",
+       subtitle = "ВПО, Сельское хозяйство и сельскохозяйственные науки")
+
+## VPO 5
+vpo_allreg_perc_applied_accepted %>% 
+  filter(region %in% roi &
+           str_detect(group_code_name, "^5")) %>% 
+  pivot_longer(cols = -c(region, year, group_code_name)) %>% 
+  mutate(code = group_code_name %>% str_remove_all("^\\d{1}\\.") %>% str_remove_all("\\.\\d{2}.+$")) %>% 
+  filter(!str_detect(name, "konkurs")) %>% # print()
+  ggplot(aes(year, value, color = name)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(code ~ region,
+             scales = "free_y") +
+  scale_color_discrete(labels = c(perc_applied_budget = "Поданные, бюджет", 
+                                  perc_applied_commerc = "Поданные, коммерция",
+                                  perc_accepted_budget = "Принятые, бюджет",
+                                  perc_accepted_commerc = "Принятые, коммерция")) +
+  labs(x = "Год", y = "Доля",
+       color = "",
+       title = "Динамика поданных/принятых заявлений",
+       subtitle = "ВПО, Науки об обществе")
+
+
+## VPO 6
+vpo_allreg_perc_applied_accepted %>% 
+  filter(region %in% roi &
+           str_detect(group_code_name, "^6")) %>% 
+  pivot_longer(cols = -c(region, year, group_code_name)) %>% 
+  mutate(code = group_code_name %>% str_remove_all("^\\d{1}\\.") %>% str_remove_all("\\.\\d{2}.+$")) %>% 
+  filter(!str_detect(name, "konkurs")) %>% # print()
+  ggplot(aes(year, value, color = name)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(code ~ region,
+             scales = "free_y") +
+  scale_color_discrete(labels = c(perc_applied_budget = "Поданные, бюджет", 
+                                  perc_applied_commerc = "Поданные, коммерция",
+                                  perc_accepted_budget = "Принятые, бюджет",
+                                  perc_accepted_commerc = "Принятые, коммерция")) +
+  labs(x = "Год", y = "Доля",
+       color = "",
+       title = "Динамика поданных/принятых заявлений",
+       subtitle = "ВПО, Образование и педагогические науки")
+
+
+## VPO 7
+vpo_allreg_perc_applied_accepted %>% 
+  filter(region %in% roi &
+           str_detect(group_code_name, "^7")) %>% 
+  pivot_longer(cols = -c(region, year, group_code_name)) %>% 
+  mutate(code = group_code_name %>% str_remove_all("^\\d{1}\\.") %>% str_remove_all("\\.\\d{2}.+$")) %>% 
+  filter(!str_detect(name, "konkurs")) %>% # print()
+  ggplot(aes(year, value, color = name)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(code ~ region,
+             scales = "free_y") +
+  scale_color_discrete(labels = c(perc_applied_budget = "Поданные, бюджет", 
+                                  perc_applied_commerc = "Поданные, коммерция",
+                                  perc_accepted_budget = "Принятые, бюджет",
+                                  perc_accepted_commerc = "Принятые, коммерция")) +
+  labs(x = "Год", y = "Доля",
+       color = "",
+       title = "Динамика поданных/принятых заявлений",
+       subtitle = "ВПО, Гуманитарные науки")
+
+
+## VPO 8
+vpo_allreg_perc_applied_accepted %>% 
+  filter(region %in% roi &
+           str_detect(group_code_name, "^8")) %>% 
+  pivot_longer(cols = -c(region, year, group_code_name)) %>% 
+  mutate(code = group_code_name %>% str_remove_all("^\\d{1}\\.") %>% str_remove_all("\\.\\d{2}.+$")) %>% 
+  filter(!str_detect(name, "konkurs")) %>% # print()
+  ggplot(aes(year, value, color = name)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(code ~ region,
+             scales = "free_y") +
+  scale_color_discrete(labels = c(perc_applied_budget = "Поданные, бюджет", 
+                                  perc_applied_commerc = "Поданные, коммерция",
+                                  perc_accepted_budget = "Принятые, бюджет",
+                                  perc_accepted_commerc = "Принятые, коммерция")) +
+  labs(x = "Год", y = "Доля",
+       color = "",
+       title = "Динамика поданных/принятых заявлений",
+       subtitle = "ВПО, Искусство и культура")
 
