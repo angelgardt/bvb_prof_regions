@@ -117,6 +117,108 @@ vpo_allreg_fields %>% # colnames()
          perc_accepted_commerc) -> vpo_allreg_fields_perc_applied_accepted
 
 
+## Export tables
+
+spo_allreg_fields_perc_applied_accepted %>% 
+  filter(region %in% roi) %>% 
+  pivot_longer(cols = -c(region, year, field)) %>% 
+  filter(!str_detect(name, "konkurs")) %>% 
+  left_join(
+    spo_allreg_avgs %>% 
+      distinct(field, field_name),
+    join_by(field)
+  ) %>% 
+  select(region, field, field_name, name, year, value) %>% 
+  rename(stat = name) %>% 
+  mutate(value = round(value * 100, 2)) %>% 
+  pivot_wider(names_from = year,
+              values_from = value) %>% # pull(name) %>% unique()
+  mutate(stat = recode(stat,
+                       "perc_applied_budget" = "Подано, бюджет",
+                       "perc_applied_commerc" = "Подано, коммерция" ,
+                       "perc_accepted_budget" = "Принято, бюджет",
+                       "perc_accepted_commerc" = "Принято, коммерция")) %>% # print()
+  # write_csv("SPO_PFO_dynamics_fields.csv")
+  googlesheets4::write_sheet(
+    ss = "https://docs.google.com/spreadsheets/d/1YuYjpk5ANbsObbSWgz8K90mGIMqvJAN4nPRUGCdJbHM/edit#gid=0",
+    sheet = "SPO_PFO_dynamics_fields"
+  )
+
+vpo_allreg_fields_perc_applied_accepted %>% 
+  filter(region %in% roi) %>% 
+  pivot_longer(cols = -c(region, year, field)) %>% 
+  filter(!str_detect(name, "konkurs")) %>% 
+  left_join(
+    vpo_allreg_avgs %>% 
+      distinct(field, field_name),
+    join_by(field)
+  ) %>% 
+  select(region, field, field_name, name, year, value) %>% 
+  rename(stat = name) %>% 
+  mutate(value = round(value * 100, 2)) %>% 
+  pivot_wider(names_from = year,
+              values_from = value) %>% # pull(name) %>% unique()
+  mutate(stat = recode(stat,
+                       "perc_applied_budget" = "Подано, бюджет",
+                       "perc_applied_commerc" = "Подано, коммерция" ,
+                       "perc_accepted_budget" = "Принято, бюджет",
+                       "perc_accepted_commerc" = "Принято, коммерция")) %>% #print()
+  # write_csv("VPO_PFO_dynamics_fields.csv")
+  googlesheets4::write_sheet(
+    ss = "https://docs.google.com/spreadsheets/d/1YuYjpk5ANbsObbSWgz8K90mGIMqvJAN4nPRUGCdJbHM/edit#gid=0",
+    sheet = "VPO_PFO_dynamics_fields"
+  )
+
+spo_allreg_perc_applied_accepted %>% 
+  filter(region %in% roi) %>% 
+  pivot_longer(cols = -c(region, year, group_code_name)) %>% 
+  mutate(code = group_code_name %>% str_remove_all("^\\d{1}\\.") %>% str_remove_all("\\.\\d{2}.+$")) %>% 
+  filter(!str_detect(name, "konkurs")) %>% # print()
+  left_join(spo_allreg_avgs %>% 
+              distinct(field, field_name, group_code_name),
+            join_by(group_code_name)
+  ) %>% 
+  select(region, field, field_name, code, group_code_name, stat = name, year, value) %>% 
+  mutate(value = round(value * 100, 2),
+         stat = recode(stat,
+                       "perc_applied_budget" = "Подано, бюджет",
+                       "perc_applied_commerc" = "Подано, коммерция" ,
+                       "perc_accepted_budget" = "Принято, бюджет",
+                       "perc_accepted_commerc" = "Принято, коммерция")) %>% # print()
+  pivot_wider(names_from = year,
+              values_from = value) %>% # View()
+  # write_csv("SPO_PFO_dynamics_groups.csv")
+  googlesheets4::write_sheet(
+    ss = "https://docs.google.com/spreadsheets/d/1YuYjpk5ANbsObbSWgz8K90mGIMqvJAN4nPRUGCdJbHM/edit#gid=0",
+    sheet = "SPO_PFO_dynamics_groups"
+  )
+
+vpo_allreg_perc_applied_accepted %>% 
+  filter(region %in% roi) %>% 
+  pivot_longer(cols = -c(region, year, group_code_name)) %>% 
+  mutate(code = group_code_name %>% str_remove_all("^\\d{1}\\.") %>% str_remove_all("\\.\\d{2}.+$")) %>% 
+  filter(!str_detect(name, "konkurs")) %>% # print()
+  left_join(vpo_allreg_avgs %>% 
+              distinct(field, field_name, group_code_name),
+            join_by(group_code_name)
+  ) %>% 
+  select(region, field, field_name, code, group_code_name, stat = name, year, value) %>% 
+  mutate(value = round(value * 100, 2),
+         stat = recode(stat,
+                       "perc_applied_budget" = "Подано, бюджет",
+                       "perc_applied_commerc" = "Подано, коммерция" ,
+                       "perc_accepted_budget" = "Принято, бюджет",
+                       "perc_accepted_commerc" = "Принято, коммерция")) %>% # print()
+  pivot_wider(names_from = year,
+              values_from = value) %>% # View()
+  # write_csv("VPO_PFO_dynamics_groups.csv")
+  googlesheets4::write_sheet(
+    ss = "https://docs.google.com/spreadsheets/d/1YuYjpk5ANbsObbSWgz8K90mGIMqvJAN4nPRUGCdJbHM/edit#gid=0",
+    sheet = "VPO_PFO_dynamics_groups"
+  )
+
+
+
 
 
 
