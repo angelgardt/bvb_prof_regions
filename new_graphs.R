@@ -98,6 +98,112 @@ vpo_allreg_fields %>% # colnames()
   mutate(perc_applied = applied_field / applied_sum,
          perc_accepted = accepted_field / accepted_sum) -> vpo_allreg_fields_perc_applied_accepted
 
+## export tables ----
+
+spo_allreg_fields_perc_applied_accepted %>% 
+  filter(region %in% roi_ufo) %>% 
+  pivot_longer(cols = -c(region, year, field, field_name)) %>% 
+  filter(str_detect(name, "perc")) %>% 
+  mutate(value = round(value * 100, 2),
+         name = recode(name, 
+                       perc_accepted = "Принятые",
+                       perc_applied = "Поданные")) %>% 
+  rename(stat = name) %>% 
+  pivot_wider(names_from = year,
+              values_from = value) %>% 
+  # write_csv("SPO_UFO_dynamics_fields_new.csv")
+  googlesheets4::write_sheet(
+    ss = "https://docs.google.com/spreadsheets/d/1YuYjpk5ANbsObbSWgz8K90mGIMqvJAN4nPRUGCdJbHM/edit#gid=0",
+    sheet = "new_SPO_UFO_dynamics_fields"
+  )
+
+spo_allreg_fields_perc_applied_accepted %>% 
+  filter(region %in% roi_pfo) %>% 
+  pivot_longer(cols = -c(region, year, field, field_name)) %>% 
+  filter(str_detect(name, "perc")) %>% 
+  mutate(value = round(value * 100, 2),
+         name = recode(name, 
+                       perc_accepted = "Принятые",
+                       perc_applied = "Поданные")) %>% 
+  rename(stat = name) %>% 
+  pivot_wider(names_from = year,
+              values_from = value) %>% # print()
+  # write_csv("SPO_PFO_dynamics_fields_new.csv")
+  googlesheets4::write_sheet(
+    ss = "https://docs.google.com/spreadsheets/d/1YuYjpk5ANbsObbSWgz8K90mGIMqvJAN4nPRUGCdJbHM/edit#gid=0",
+    sheet = "new_SPO_PFO_dynamics_fields"
+  )
+
+spo_allreg_fields_perc_applied_accepted %>% 
+  filter(region %in% roi_usfo) %>% 
+  pivot_longer(cols = -c(region, year, field, field_name)) %>% 
+  filter(str_detect(name, "perc")) %>% 
+  mutate(value = round(value * 100, 2),
+         name = recode(name, 
+                       perc_accepted = "Принятые",
+                       perc_applied = "Поданные")) %>% 
+  rename(stat = name) %>% 
+  pivot_wider(names_from = year,
+              values_from = value) %>% # print()
+  # write_csv("SPO_USFO_dynamics_fields_new.csv")
+  googlesheets4::write_sheet(
+    ss = "https://docs.google.com/spreadsheets/d/1YuYjpk5ANbsObbSWgz8K90mGIMqvJAN4nPRUGCdJbHM/edit#gid=0",
+    sheet = "new_SPO_USFO_dynamics_fields"
+  )
+
+vpo_allreg_fields_perc_applied_accepted %>% 
+  filter(region %in% roi_ufo) %>% 
+  pivot_longer(cols = -c(region, year, field, field_name)) %>% 
+  filter(str_detect(name, "perc")) %>% 
+  mutate(value = round(value * 100, 2),
+         name = recode(name, 
+                       perc_accepted = "Принятые",
+                       perc_applied = "Поданные")) %>% 
+  rename(stat = name) %>% 
+  pivot_wider(names_from = year,
+              values_from = value) %>% # print()
+  # write_csv("VPO_UFO_dynamics_fields_new.csv")
+  googlesheets4::write_sheet(
+    ss = "https://docs.google.com/spreadsheets/d/1YuYjpk5ANbsObbSWgz8K90mGIMqvJAN4nPRUGCdJbHM/edit#gid=0",
+    sheet = "new_VPO_UFO_dynamics_fields"
+  )
+
+vpo_allreg_fields_perc_applied_accepted %>% 
+  filter(region %in% roi_pfo) %>% 
+  pivot_longer(cols = -c(region, year, field, field_name)) %>% 
+  filter(str_detect(name, "perc")) %>% 
+  mutate(value = round(value * 100, 2),
+         name = recode(name, 
+                       perc_accepted = "Принятые",
+                       perc_applied = "Поданные")) %>% 
+  rename(stat = name) %>% 
+  pivot_wider(names_from = year,
+              values_from = value) %>% # print()
+  # write_csv("VPO_PFO_dynamics_fields_new.csv")
+  googlesheets4::write_sheet(
+    ss = "https://docs.google.com/spreadsheets/d/1YuYjpk5ANbsObbSWgz8K90mGIMqvJAN4nPRUGCdJbHM/edit#gid=0",
+    sheet = "new_VPO_PFO_dynamics_fields"
+  )
+
+vpo_allreg_fields_perc_applied_accepted %>% 
+  filter(region %in% roi_usfo) %>% 
+  pivot_longer(cols = -c(region, year, field, field_name)) %>% 
+  filter(str_detect(name, "perc")) %>% 
+  mutate(value = round(value * 100, 2),
+         name = recode(name, 
+                       perc_accepted = "Принятые",
+                       perc_applied = "Поданные")) %>% 
+  rename(stat = name) %>% 
+  pivot_wider(names_from = year,
+              values_from = value) %>% # print()
+  # write_csv("VPO_USFO_dynamics_fields_new.csv")
+  googlesheets4::write_sheet(
+    ss = "https://docs.google.com/spreadsheets/d/1YuYjpk5ANbsObbSWgz8K90mGIMqvJAN4nPRUGCdJbHM/edit#gid=0",
+    sheet = "new_VPO_USFO_dynamics_fields"
+  )
+
+
+
 
 ### UFO -----
 
@@ -252,6 +358,7 @@ vpo_allreg_fields_perc_applied_accepted %>%
 
 
 
+
 spo_allreg_fields %>% 
   distinct(field, field_name) %>% 
   arrange(field) -> fields
@@ -374,3 +481,153 @@ vpo_allreg_perc_applied_accepted %>%
     title = "Динамика поданных/принятых заявлений",
     subtitle = paste0("ВПО, ", fields$field_name[1])
   )
+
+
+
+## export tables ----
+
+spo_allreg_perc_applied_accepted %>%
+  filter(region %in% roi_ufo) %>%
+  mutate(field = str_extract(group_code_name, "^\\d{1}") %>% as.numeric()) %>% 
+  left_join(fields,
+            join_by(field)) %>% 
+  select(region, year, field, field_name, group_code_name, perc_applied, perc_accepted) %>% 
+  pivot_longer(cols = -c(region, year, group_code_name, field, field_name),
+               names_to = "stat") %>%
+  mutate(
+    code = group_code_name %>% str_remove_all("^\\d{1}\\.") %>% str_remove_all("\\.\\d{2}.+$"),
+    value = round(value * 100, 2),
+    stat = recode(stat, 
+                  perc_accepted = "Принятые",
+                  perc_applied = "Поданные")
+  ) %>% 
+  select(region, year, field, field_name, code, group_code_name, stat, value) %>% 
+  pivot_wider(names_from = year,
+              values_from = value) %>% 
+  # write_csv("SPO_UFO_dynamics_groups_new.csv")
+  googlesheets4::write_sheet(
+    ss = "https://docs.google.com/spreadsheets/d/1YuYjpk5ANbsObbSWgz8K90mGIMqvJAN4nPRUGCdJbHM/edit#gid=0",
+    sheet = "new_SPO_UFO_dynamics_groups"
+  )
+
+spo_allreg_perc_applied_accepted %>%
+  filter(region %in% roi_pfo) %>%
+  mutate(field = str_extract(group_code_name, "^\\d{1}") %>% as.numeric()) %>% 
+  left_join(fields,
+            join_by(field)) %>% 
+  select(region, year, field, field_name, group_code_name, perc_applied, perc_accepted) %>% 
+  pivot_longer(cols = -c(region, year, group_code_name, field, field_name),
+               names_to = "stat") %>%
+  mutate(
+    code = group_code_name %>% str_remove_all("^\\d{1}\\.") %>% str_remove_all("\\.\\d{2}.+$"),
+    value = round(value * 100, 2),
+    stat = recode(stat, 
+                  perc_accepted = "Принятые",
+                  perc_applied = "Поданные")
+  ) %>% 
+  select(region, year, field, field_name, code, group_code_name, stat, value) %>% 
+  pivot_wider(names_from = year,
+              values_from = value) %>% 
+  # write_csv("SPO_PFO_dynamics_groups_new.csv")
+  googlesheets4::write_sheet(
+    ss = "https://docs.google.com/spreadsheets/d/1YuYjpk5ANbsObbSWgz8K90mGIMqvJAN4nPRUGCdJbHM/edit#gid=0",
+    sheet = "new_SPO_PFO_dynamics_groups"
+  )
+
+spo_allreg_perc_applied_accepted %>%
+  filter(region %in% roi_usfo) %>%
+  mutate(field = str_extract(group_code_name, "^\\d{1}") %>% as.numeric()) %>% 
+  left_join(fields,
+            join_by(field)) %>% 
+  select(region, year, field, field_name, group_code_name, perc_applied, perc_accepted) %>% 
+  pivot_longer(cols = -c(region, year, group_code_name, field, field_name),
+               names_to = "stat") %>%
+  mutate(
+    code = group_code_name %>% str_remove_all("^\\d{1}\\.") %>% str_remove_all("\\.\\d{2}.+$"),
+    value = round(value * 100, 2),
+    stat = recode(stat, 
+                  perc_accepted = "Принятые",
+                  perc_applied = "Поданные")
+  ) %>% 
+  select(region, year, field, field_name, code, group_code_name, stat, value) %>% 
+  pivot_wider(names_from = year,
+              values_from = value) %>% 
+  # write_csv("SPO_USFO_dynamics_groups_new.csv")
+  googlesheets4::write_sheet(
+    ss = "https://docs.google.com/spreadsheets/d/1YuYjpk5ANbsObbSWgz8K90mGIMqvJAN4nPRUGCdJbHM/edit#gid=0",
+    sheet = "new_SPO_USFO_dynamics_groups"
+  )
+
+
+vpo_allreg_perc_applied_accepted %>%
+  filter(region %in% roi_ufo) %>%
+  mutate(field = str_extract(group_code_name, "^\\d{1}") %>% as.numeric()) %>% 
+  left_join(fields,
+            join_by(field)) %>% 
+  select(region, year, field, field_name, group_code_name, perc_applied, perc_accepted) %>% 
+  pivot_longer(cols = -c(region, year, group_code_name, field, field_name),
+               names_to = "stat") %>%
+  mutate(
+    code = group_code_name %>% str_remove_all("^\\d{1}\\.") %>% str_remove_all("\\.\\d{2}.+$"),
+    value = round(value * 100, 2),
+    stat = recode(stat, 
+                  perc_accepted = "Принятые",
+                  perc_applied = "Поданные")
+  ) %>% 
+  select(region, year, field, field_name, code, group_code_name, stat, value) %>% 
+  pivot_wider(names_from = year,
+              values_from = value) %>% 
+  # write_csv("VPO_UFO_dynamics_groups_new.csv")
+  googlesheets4::write_sheet(
+    ss = "https://docs.google.com/spreadsheets/d/1YuYjpk5ANbsObbSWgz8K90mGIMqvJAN4nPRUGCdJbHM/edit#gid=0",
+    sheet = "new_VPO_UFO_dynamics_groups"
+  )
+
+vpo_allreg_perc_applied_accepted %>%
+  filter(region %in% roi_pfo) %>%
+  mutate(field = str_extract(group_code_name, "^\\d{1}") %>% as.numeric()) %>% 
+  left_join(fields,
+            join_by(field)) %>% 
+  select(region, year, field, field_name, group_code_name, perc_applied, perc_accepted) %>% 
+  pivot_longer(cols = -c(region, year, group_code_name, field, field_name),
+               names_to = "stat") %>%
+  mutate(
+    code = group_code_name %>% str_remove_all("^\\d{1}\\.") %>% str_remove_all("\\.\\d{2}.+$"),
+    value = round(value * 100, 2),
+    stat = recode(stat, 
+                  perc_accepted = "Принятые",
+                  perc_applied = "Поданные")
+  ) %>% 
+  select(region, year, field, field_name, code, group_code_name, stat, value) %>% 
+  pivot_wider(names_from = year,
+              values_from = value) %>% 
+  # write_csv("VPO_PFO_dynamics_groups_new.csv")
+  googlesheets4::write_sheet(
+    ss = "https://docs.google.com/spreadsheets/d/1YuYjpk5ANbsObbSWgz8K90mGIMqvJAN4nPRUGCdJbHM/edit#gid=0",
+    sheet = "new_VPO_PFO_dynamics_groups"
+  )
+
+vpo_allreg_perc_applied_accepted %>%
+  filter(region %in% roi_usfo) %>%
+  mutate(field = str_extract(group_code_name, "^\\d{1}") %>% as.numeric()) %>% 
+  left_join(fields,
+            join_by(field)) %>% 
+  select(region, year, field, field_name, group_code_name, perc_applied, perc_accepted) %>% 
+  pivot_longer(cols = -c(region, year, group_code_name, field, field_name),
+               names_to = "stat") %>%
+  mutate(
+    code = group_code_name %>% str_remove_all("^\\d{1}\\.") %>% str_remove_all("\\.\\d{2}.+$"),
+    value = round(value * 100, 2),
+    stat = recode(stat, 
+                  perc_accepted = "Принятые",
+                  perc_applied = "Поданные")
+  ) %>% 
+  select(region, year, field, field_name, code, group_code_name, stat, value) %>% 
+  pivot_wider(names_from = year,
+              values_from = value) %>% 
+  # write_csv("VPO_USFO_dynamics_groups_new.csv")
+  googlesheets4::write_sheet(
+    ss = "https://docs.google.com/spreadsheets/d/1YuYjpk5ANbsObbSWgz8K90mGIMqvJAN4nPRUGCdJbHM/edit#gid=0",
+    sheet = "new_VPO_USFO_dynamics_groups"
+  )
+
