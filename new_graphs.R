@@ -18,6 +18,7 @@ roi_usfo <- c("Тюменская область", "Омская область"
 roi_ufo <- c("Ростовская область", "Волгоградская область")
 
 
+
 spo_allreg_avgs %>% #colnames()
   summarise(applied_budget_group_sum = sum(applied_budget_total_sum),
             applied_commerc_group_sum = sum(applied_commerc_sum),
