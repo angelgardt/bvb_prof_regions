@@ -1,5 +1,6 @@
 library(tidyverse)
-
+theme_set(theme_bw())
+theme_update(legend.position = "bottom")
 
 ## Combine SPO ----
 
@@ -580,4 +581,349 @@ vpo_groups_perc %>%
   googlesheets4::write_sheet(
     ss = "https://docs.google.com/spreadsheets/d/1YuYjpk5ANbsObbSWgz8K90mGIMqvJAN4nPRUGCdJbHM/edit#gid=0",
     sheet = "perc_VPO_USFO_groups"
+  )
+
+
+## Graphs ---
+
+spo_fields_perc %>% 
+  pivot_longer(cols =  matches("\\d{4}")) -> spo_fields_perc_long
+vpo_fields_perc %>% 
+  pivot_longer(cols =  matches("\\d{4}")) -> vpo_fields_perc_long
+spo_groups_perc %>% 
+  pivot_longer(cols =  matches("\\d{4}")) %>% 
+  mutate(gr_code = str_extract(group_code_name, "^\\d{1}\\.\\d{2}") %>% str_remove("^\\d{1}\\.")) -> spo_groups_perc_long
+vpo_groups_perc %>% 
+  pivot_longer(cols =  matches("\\d{4}")) %>% 
+  mutate(gr_code = str_extract(group_code_name, "^\\d{1}\\.\\d{2}") %>% str_remove("^\\d{1}\\.")) -> vpo_groups_perc_long
+
+spo_fields_counts %>% 
+  pivot_longer(cols =  matches("\\d{4}")) -> spo_fields_counts_long
+vpo_fields_counts %>% 
+  pivot_longer(cols =  matches("\\d{4}")) -> vpo_fields_counts_long
+spo_groups_counts %>% 
+  pivot_longer(cols =  matches("\\d{4}")) %>% 
+  mutate(gr_code = str_extract(group_code_name, "^\\d{1}\\.\\d{2}") %>% str_remove("^\\d{1}\\.")) -> spo_groups_counts_long
+vpo_groups_counts %>% 
+  pivot_longer(cols =  matches("\\d{4}")) %>% 
+  mutate(gr_code = str_extract(group_code_name, "^\\d{1}\\.\\d{2}") %>% str_remove("^\\d{1}\\.")) -> vpo_groups_counts_long
+
+
+
+spo_fields_perc_long %>% 
+  filter(region %in% roi_ufo) %>% 
+  ggplot(aes(name, value, 
+             shape = stat, 
+             linetype = stat,
+             group = stat)) +
+  geom_line() +
+  geom_point() +
+  # geom_text(aes(label = value), 
+  #           size = 3, position = position_nudge(x = .3)) +
+  facet_grid(field ~ region,
+             scales = "free_y") +
+  # scale_linetype_manual(values = c(perc_applied = "solid",
+  #                                  perc_accepted = "dashed")) +
+  # scale_shape_manual(values = c(perc_applied = 16,
+  #                               perc_accepted = 17)) +
+  labs(x = "Год", y = "Процент",
+       shape = "", linetype = "",
+       title = "Динамика поданных/принятых заявлений",
+       subtitle = "CПО")
+
+spo_fields_perc_long %>% 
+  filter(region %in% roi_pfo) %>% 
+  ggplot(aes(name, value, 
+             shape = stat, 
+             linetype = stat,
+             group = stat)) +
+  geom_line() +
+  geom_point() +
+  # geom_text(aes(label = value), 
+  #           size = 3, position = position_nudge(x = .3)) +
+  facet_grid(field ~ region,
+             scales = "free_y") +
+  # scale_linetype_manual(values = c(perc_applied = "solid",
+  #                                  perc_accepted = "dashed")) +
+  # scale_shape_manual(values = c(perc_applied = 16,
+  #                               perc_accepted = 17)) +
+  labs(x = "Год", y = "Процент",
+       shape = "", linetype = "",
+       title = "Динамика поданных/принятых заявлений",
+       subtitle = "CПО")
+
+spo_fields_perc_long %>% 
+  filter(region %in% roi_usfo) %>% 
+  ggplot(aes(name, value, 
+             shape = stat, 
+             linetype = stat,
+             group = stat)) +
+  geom_line() +
+  geom_point() +
+  # geom_text(aes(label = value), 
+  #           size = 3, position = position_nudge(x = .3)) +
+  facet_grid(field ~ region,
+             scales = "free_y") +
+  # scale_linetype_manual(values = c(perc_applied = "solid",
+  #                                  perc_accepted = "dashed")) +
+  # scale_shape_manual(values = c(perc_applied = 16,
+  #                               perc_accepted = 17)) +
+  labs(x = "Год", y = "Процент",
+       shape = "", linetype = "",
+       title = "Динамика поданных/принятых заявлений",
+       subtitle = "CПО")
+
+# spo_fields_counts_long %>% 
+#   filter(region %in% roi_ufo) %>% 
+#   ggplot(aes(name, value, 
+#              shape = stat, 
+#              linetype = stat,
+#              group = stat)) +
+#   geom_line() +
+#   geom_point() +
+#   facet_grid(field ~ region,
+#              scales = "free_y") +
+#   # scale_linetype_manual(values = c(perc_applied = "solid",
+#   #                                  perc_accepted = "dashed")) +
+#   # scale_shape_manual(values = c(perc_applied = 16,
+#   #                               perc_accepted = 17)) +
+#   labs(x = "Год", y = "Количество",
+#        shape = "", linetype = "",
+#        title = "Динамика поданных/принятых заявлений",
+#        subtitle = "CПО")
+
+
+
+vpo_fields_perc_long %>% 
+  filter(region %in% roi_ufo) %>% 
+  ggplot(aes(name, value, 
+             shape = stat, 
+             linetype = stat,
+             group = stat)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(field ~ region,
+             scales = "free_y") +
+  # scale_linetype_manual(values = c(perc_applied = "solid",
+  #                                  perc_accepted = "dashed")) +
+  # scale_shape_manual(values = c(perc_applied = 16,
+  #                               perc_accepted = 17)) +
+  labs(x = "Год", y = "Процент",
+       shape = "", linetype = "",
+       title = "Динамика поданных/принятых заявлений",
+       subtitle = "BПО")
+
+vpo_fields_perc_long %>% 
+  filter(region %in% roi_pfo) %>% 
+  ggplot(aes(name, value, 
+             shape = stat, 
+             linetype = stat,
+             group = stat)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(field ~ region,
+             scales = "free_y") +
+  # scale_linetype_manual(values = c(perc_applied = "solid",
+  #                                  perc_accepted = "dashed")) +
+  # scale_shape_manual(values = c(perc_applied = 16,
+  #                               perc_accepted = 17)) +
+  labs(x = "Год", y = "Процент",
+       shape = "", linetype = "",
+       title = "Динамика поданных/принятых заявлений",
+       subtitle = "BПО")
+
+vpo_fields_perc_long %>% 
+  filter(region %in% roi_usfo) %>% 
+  ggplot(aes(name, value, 
+             shape = stat, 
+             linetype = stat,
+             group = stat)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(field ~ region,
+             scales = "free_y") +
+  # scale_linetype_manual(values = c(perc_applied = "solid",
+  #                                  perc_accepted = "dashed")) +
+  # scale_shape_manual(values = c(perc_applied = 16,
+  #                               perc_accepted = 17)) +
+  labs(x = "Год", y = "Процент",
+       shape = "", linetype = "",
+       title = "Динамика поданных/принятых заявлений",
+       subtitle = "BПО")
+
+
+# vpo_fields_counts_long %>% 
+#   filter(region %in% roi_ufo) %>% 
+#   ggplot(aes(name, value, 
+#              shape = stat, 
+#              linetype = stat,
+#              group = stat)) +
+#   geom_line() +
+#   geom_point() +
+#   facet_grid(field ~ region,
+#              scales = "free_y") +
+#   # scale_linetype_manual(values = c(perc_applied = "solid",
+#   #                                  perc_accepted = "dashed")) +
+#   # scale_shape_manual(values = c(perc_applied = 16,
+#   #                               perc_accepted = 17)) +
+#   labs(x = "Год", y = "Количество",
+#        shape = "", linetype = "",
+#        title = "Динамика поданных/принятых заявлений",
+#        subtitle = "BПО")
+
+fields <- specs %>% 
+  select(field, field_name) %>% 
+  distinct()
+
+roi_list <- list(ufo = roi_ufo,
+                 pfo = roi_pfo,
+                 usfo = roi_usfo)
+
+
+spo_groups_perc_long %>% 
+  filter(region %in% roi_list$ufo &
+           field == 1) %>% 
+  ggplot(aes(name, value, 
+             shape = stat, 
+             linetype = stat,
+             group = stat)) +
+  geom_line() +
+  geom_point() +
+  # geom_text(aes(label = value), 
+  #           size = 3, position = position_nudge(x = .3)) +
+  facet_grid(gr_code ~ region,
+             scales = "free_y") +
+  # scale_linetype_manual(values = c(perc_applied = "solid",
+  #                                  perc_accepted = "dashed")) +
+  # scale_shape_manual(values = c(perc_applied = 16,
+  #                               perc_accepted = 17)) +
+  labs(x = "Год", y = "Процент",
+       shape = "", linetype = "",
+       title = "Динамика поданных/принятых заявлений",
+       subtitle = paste0("CПО, ", fields$field_name[f]))
+
+
+for (f in 1:8) {
+  for (r in roi_list) {
+    print(paste0("FIELD ", f))
+    print(paste0("ROI ", r))
+    
+    print("SPO")
+    
+    spo_groups_perc_long %>% 
+    filter(region %in% r &
+             field == f) -> d
+    
+    if (nrow(d) == 0) next
+    
+    d %>% 
+      ggplot(aes(name, value, 
+               shape = stat, 
+               linetype = stat,
+               group = stat)) +
+    geom_line() +
+    geom_point() +
+    # geom_text(aes(label = value), 
+    #           size = 3, position = position_nudge(x = .3)) +
+    facet_grid(gr_code ~ region,
+               scales = "free_y") +
+    # scale_linetype_manual(values = c(perc_applied = "solid",
+    #                                  perc_accepted = "dashed")) +
+    # scale_shape_manual(values = c(perc_applied = 16,
+    #                               perc_accepted = 17)) +
+    labs(x = "Год", y = "Процент",
+         shape = "", linetype = "",
+         title = "Динамика поданных/принятых заявлений",
+         subtitle = paste0("CПО, ", fields$field_name[f])) -> current_graph
+    print(current_graph)
+    
+    print("VPO")
+    
+    vpo_groups_perc_long %>% 
+      filter(region %in% r &
+               field == f) -> d
+    
+    if (nrow(d) == 0) next
+    
+    d %>% 
+      ggplot(aes(name, value, 
+                 shape = stat, 
+                 linetype = stat,
+                 group = stat)) +
+      geom_line() +
+      geom_point() +
+      # geom_text(aes(label = value), 
+      #           size = 3, position = position_nudge(x = .3)) +
+      facet_grid(gr_code ~ region,
+                 scales = "free_y") +
+      # scale_linetype_manual(values = c(perc_applied = "solid",
+      #                                  perc_accepted = "dashed")) +
+      # scale_shape_manual(values = c(perc_applied = 16,
+      #                               perc_accepted = 17)) +
+      labs(x = "Год", y = "Процент",
+           shape = "", linetype = "",
+           title = "Динамика поданных/принятых заявлений",
+           subtitle = paste0("ВПО, ", fields$field_name[f])) -> current_graph
+    print(current_graph)
+    
+  }
+}
+
+
+# spo_groups_perc_long %>%
+#   filter(region %in% roi_usfo &
+#            field == 1)  %>%
+#   ggplot(aes(
+#     name,
+#     value,
+#     shape = stat,
+#     linetype = stat,
+#     group = stat
+#   )) +
+#   geom_line() +
+#   geom_point() +
+#   # geom_text(aes(label = value),
+#   #           size = 3, position = position_nudge(x = .3)) +
+#   facet_grid(gr_code ~ region,
+#              scales = "free_y") +
+#   # scale_linetype_manual(values = c(perc_applied = "solid",
+#   #                                  perc_accepted = "dashed")) +
+#   # scale_shape_manual(values = c(perc_applied = 16,
+#   #                               perc_accepted = 17)) +
+#   labs(
+#     x = "Год",
+#     y = "Процент",
+#     shape = "",
+#     linetype = "",
+#     title = "Динамика поданных/принятых заявлений",
+#     subtitle = "CПО, Математические и естественные науки"
+#   )
+
+vpo_groups_perc_long %>%
+  filter(region %in% roi_usfo &
+           field == 1) %>%
+  ggplot(aes(
+    name,
+    value,
+    shape = stat,
+    linetype = stat,
+    group = stat
+  )) +
+  geom_line() +
+  geom_point() +
+  # geom_text(aes(label = value),
+  #           size = 3, position = position_nudge(x = .3)) +
+  facet_grid(gr_code ~ region,
+             scales = "free_y") +
+  # scale_linetype_manual(values = c(perc_applied = "solid",
+  #                                  perc_accepted = "dashed")) +
+  # scale_shape_manual(values = c(perc_applied = 16,
+  #                               perc_accepted = 17)) +
+  labs(
+    x = "Год",
+    y = "Процент",
+    shape = "",
+    linetype = "",
+    title = "Динамика поданных/принятых заявлений",
+    subtitle = paste0("ВПО, ", fields$field_name[1])
   )
