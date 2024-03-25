@@ -927,3 +927,5 @@ vpo_groups_perc_long %>%
     title = "Динамика поданных/принятых заявлений",
     subtitle = paste0("ВПО, ", fields$field_name[1])
   )
+
+save.image("redo.RData")
